@@ -1,0 +1,454 @@
+id,id_json,DZ_NAME,value
+1,S01002572,North Queensferry,251
+2,S01002573,North Queensferry Ferryhills,75
+3,S01002574,Inverkeithing Jamestown,758
+4,S01002575,Rosyth Dockyard & Castle,940
+5,S01002576,Dalgety St Davids Clump,471
+6,S01002577,Inverkeithing South East,654
+7,S01002578,Dalgety Bay South East,655
+8,S01002579,Dalgety Steeple Clump,334
+9,S01002580,Inverkeithing East,26
+10,S01002581,Dalgety Letham Hill South,175
+11,S01002582,Inverkeithing West,707
+12,S01002583,Rosyth Pease Hill East,405
+13,S01002584,Rosyth Pease Hill West,225
+14,S01002585,Inverkeithing North East,245
+15,S01002586,Dalgety Preston & Letham Hill,673
+16,S01002587,Dalgety Bogend Wood,459
+17,S01002588,Dalgety Longhill Park,877
+18,S01002589,Limekilns,249
+19,S01002590,Dalgety Bay East,668
+20,S01002591,Admiralty South,482
+21,S01002592,Admiralty South West,174
+22,S01002593,Admiralty South East,560
+23,S01002594,Dalgety Letham Hill,227
+24,S01002595,Pettiesmuir,247
+25,S01002596,Dalgety Ross Plantation,456
+26,S01002597,Admiralty Central,756
+27,S01002598,Inverkeithing North,113
+28,S01002599,Admiralty North East,858
+29,S01002600,Dalgety Letham Hill North,691
+30,S01002601,Admiralty North,66
+31,S01002602,Dalgety Donibristle South,561
+32,S01002603,Rosyth Kings South,583
+33,S01002604,Dalgety Crow Hill,465
+34,S01002605,Rosyth Kings East,241
+35,S01002606,Rosyth Wilderness East,721
+36,S01002607,Rosyth Camdean,231
+37,S01002608,Dalgety Donibristle & Hillend,892
+38,S01002609,Rosyth Kings North,191
+39,S01002610,Rosyth Wilderness North,484
+40,S01002611,Dunfermline Business Park,624
+41,S01002612,Charlestown & Bellknowes,678
+42,S01002613,St Colme & Aberdour West,151
+43,S01002614,Aberdour,525
+44,S01002615,Crombie,892
+45,S01002616,Pitcorthie South,220
+46,S01002617,Low Valleyfield,372
+47,S01002618,Burntisland Docks,229
+48,S01002619,Pitreavie,264
+49,S01002620,Burntisland Links,424
+50,S01002621,Pitcorthie East,204
+51,S01002622,Duloch & Pitreavie,657
+52,S01002623,Pitcorthie South East,640
+53,S01002624,Pitcorthie West,803
+54,S01002625,Pitcorthie Central,439
+55,S01002626,Pitbauchlie West,666
+56,S01002627,Crossford South,502
+57,S01002628,Cairneyhill East,62
+58,S01002629,Pitbauchlie & Pitcorthie North West,132
+59,S01002630,Burntisland Central,980
+60,S01002631,Cairneyhill West,140
+61,S01002632,Pitcorthie North East,419
+62,S01002633,Abbeyview Linburn,619
+63,S01002634,Kinghorn South,919
+64,S01002635,Burntisland East,170
+65,S01002636,Burntisland Meadowfield,672
+66,S01002637,Pitcorthie North,479
+67,S01002638,Pitcorthie North West,419
+68,S01002639,Ladys Mill,492
+69,S01002640,Burntisland East Toll,245
+70,S01002641,Cairneyhill North,140
+71,S01002642,Brucefield South,750
+72,S01002643,Brucefield South West,737
+73,S01002644,Burntisland Nether Grange,722
+74,S01002645,Abbeyview South East,507
+75,S01002646,Brucefield West,314
+76,S01002647,High Valleyfield,280
+77,S01002648,Crossgates Southern & Annfield,747
+78,S01002649,Abbeyview Central,828
+79,S01002650,Crossford West,947
+80,S01002651,Abbeyview West,533
+81,S01002652,Brucefield North,873
+82,S01002653,Woodmill South,182
+83,S01002654,KInghorn Central,93
+84,S01002655,Abbeyview North,545
+85,S01002656,Abbeyview East,498
+86,S01002657,Kinghorn North,660
+87,S01002658,Abbey Parks & Brucefield North West,412
+88,S01002659,Pittencrieff & Crossford East,139
+89,S01002660,Woodmill West,161
+90,S01002661,Kincardine South,983
+91,S01002662,Burntisland North and Orrock,339
+92,S01002663,Transy,282
+93,S01002664,Garvock Hill South,135
+94,S01002665,Kincardine East,808
+95,S01002666,Torryburn & Newmills,481
+96,S01002667,Woodmill North,19
+97,S01002668,Culross East,304
+98,S01002669,Berrylaw,788
+99,S01002670,Garvock Hill West,109
+100,S01002671,Carnegie Drive,279
+101,S01002672,Touch,449
+102,S01002673,Baldridgeburn South,267
+103,S01002674,Kincardine West,370
+104,S01002675,Garvock Hill North East,135
+105,S01002676,Bellyeoman South West,597
+106,S01002677,Broomhead,40
+107,S01002678,Lynebank,793
+108,S01002679,Baldridgeburn North,54
+109,S01002680,Headwell South West,594
+110,S01002681,Bellyeoman South,387
+111,S01002682,Halbeath,552
+112,S01002683,Culross West & Tulliallan,56
+113,S01002684,Headwell Central,751
+114,S01002685,Headwell East,752
+115,S01002686,Craigencalt & Pitteadie,307
+116,S01002687,Milesmark,281
+117,S01002688,Beveridgewell West,93
+118,S01002689,Beveridgewell East,425
+119,S01002690,Kingseathill,687
+120,S01002691,Bellyeoman North,79
+121,S01002692,Headwell North,362
+122,S01002693,Beveridgewell Western & Parkneuk,72
+123,S01002694,Oakley East,497
+124,S01002695,Auchtertool,263
+125,S01002696,Crossgates North,362
+126,S01002697,Carnock,731
+127,S01002698,Crossgates North East,229
+128,S01002699,Wellwood,131
+129,S01002700,Oakley North,292
+130,S01002701,Comrie West,732
+131,S01002702,Comrie East,145
+132,S01002703,Townhill & Moncur,492
+133,S01002704,Townhill Centre,972
+134,S01002705,Mossbank & Donibristle,493
+135,S01002706,Linktown South & Seafield,775
+136,S01002707,Beath Woodend,677
+137,S01002708,Blairhall and Landward,718
+138,S01002709,Linktown Central,263
+139,S01002710,Kingseat,948
+140,S01002711,Hill of Beath,554
+141,S01002712,Hill of Beath & Landward,348
+142,S01002713,Linktown East,155
+143,S01002714,Linktown North,838
+144,S01002715,Beath South West,604
+145,S01002716,Gowkhall & Landward,433
+146,S01002717,Kirkcaldy Central South,288
+147,S01002718,Cowdenbeath South,72
+148,S01002719,Cowdenbeath South West,804
+149,S01002720,Raith Estate & Southerton,337
+150,S01002721,Cowdenbeath South East,747
+151,S01002722,Kirkcaldy Central,786
+152,S01002723,Cowdenbeath Central,773
+153,S01002724,Oriel & Forth,701
+154,S01002725,Cowdenbeath North West,311
+155,S01002726,Kirkcaldy Central North,827
+156,S01002727,Raith,629
+157,S01002728,Cowdenbeath North,470
+158,S01002729,Raith & Long Braes,967
+159,S01002730,Kirkcaldy Central & East,327
+160,S01002731,Bennochy South West,879
+161,S01002732,Bennochy Balfour,591
+162,S01002733,Forth Park,366
+163,S01002734,Cowdenbeath North East,471
+164,S01002735,Pathhead Sands,121
+165,S01002736,Cowdenbeath Foulford,25
+166,S01002737,Bennochy East,935
+167,S01002738,Bennochy West,293
+168,S01002739,Saline North,262
+169,S01002740,Cowdenbeath Glenfield,758
+170,S01002741,Bennochy North,601
+171,S01002742,Forth Park North,921
+172,S01002743,Pathhead North West,256
+173,S01002744,Ravenscraig,845
+174,S01002745,Lumphinnans,82
+175,S01002746,Kirkcaldy Long Braes,547
+176,S01002747,Hayfield South,374
+177,S01002748,Pathhead Central,125
+178,S01002749,Kirkcaldy Valley West,277
+179,S01002750,Lochgelly South West,400
+180,S01002751,Kirkcaldy Valley East,676
+181,S01002752,Lochgelly Central & Western,697
+182,S01002753,Newliston,575
+183,S01002754,Kirkcaldy Viewforth,715
+184,S01002755,Templehall,902
+185,S01002756,Dysart Central,227
+186,S01002757,Lochgelly Albion Park,972
+187,S01002758,Dunearn,842
+188,S01002759,Smeaton South,854
+189,S01002760,Lochgelly Central & Eastern,520
+190,S01002761,Sinclairtown West,473
+191,S01002762,Lochgelly West & Lumphinnans Central,284
+192,S01002763,Templehall West,61
+193,S01002764,Hayfield North,345
+194,S01002765,Sinclairtown Central,688
+195,S01002766,Sinclairtown North,126
+196,S01002767,Redcraigs,196
+197,S01002768,Blackcraigs & West Torbain,232
+198,S01002769,Craigmount & Greenloanings,970
+199,S01002770,Dysart North,771
+200,S01002771,Templehall North Eastern,354
+201,S01002772,Knock Hill Landward,18
+202,S01002773,Sinclairtown East,474
+203,S01002774,Fair Isle,576
+204,S01002775,Smeaton North,766
+205,S01002776,Templehall East,579
+206,S01002777,Lochgelly West,119
+207,S01002778,Lochgelly East,250
+208,S01002779,Gallatown West,361
+209,S01002780,Templehall North,990
+210,S01002781,Chapelhill & Torbain,83
+211,S01002782,Overton,265
+212,S01002783,Lochgelly Landward,263
+213,S01002784,Dysart North East,55
+214,S01002785,Kelty South West,485
+215,S01002786,Lochgelly St Patricks & The Beeches,74
+216,S01002787,Capshard & Fair Isle North,669
+217,S01002788,Chapel,387
+218,S01002789,Dunnikier South,625
+219,S01002790,Kelty Central,199
+220,S01002791,Kelty West,344
+221,S01002792,Blairadam & Loch Glow,194
+222,S01002793,Mitchelston & Randolph,640
+223,S01002794,Lochgelly North,821
+224,S01002795,Dunnikier East,809
+225,S01002796,Kelty East,635
+226,S01002797,Dunnikier Central,185
+227,S01002798,Kelty Elmwood,829
+228,S01002799,Kelty North East,609
+229,S01002800,Dunnikier North West,278
+230,S01002801,Cardenden West,334
+231,S01002802,Dunnikier North,828
+232,S01002803,Kelty Blairadam Park,222
+233,S01002804,Bowhill and Dundonald,87
+234,S01002805,Cardenden East,285
+235,S01002806,Cluny,46
+236,S01002807,Bowhill West,949
+237,S01002808,Bowhill East,555
+238,S01002809,Glencraig Landward,631
+239,S01002810,Coaltown of Wemyss & Thornton East,515
+240,S01002811,East Wemyss,122
+241,S01002812,Auchterderran Landward,144
+242,S01002813,Crosshill & Lochore South,709
+243,S01002814,Dunnikier & Strathore,9
+244,S01002815,Lochore Central,600
+245,S01002816,Lochore North,804
+246,S01002817,Ballingry South,260
+247,S01002818,Thornton South,113
+248,S01002819,Ballingry West,767
+249,S01002820,Ballingry Central,869
+250,S01002821,Wemyss Landward,622
+251,S01002822,Ballingry East,913
+252,S01002823,Buckhaven & Muiredge South West,912
+253,S01002824,Thornton North,86
+254,S01002825,Buckhaven & Muiredge South East,541
+255,S01002826,Buckhaven & Muiredge North West,791
+256,S01002827,Kinglassie Southeast,793
+257,S01002828,Stenton South,446
+258,S01002829,Buckhaven & Muiredge North East,258
+259,S01002830,Denbeath South,456
+260,S01002831,Kinglassie Northwest,503
+261,S01002832,Stenton Central,869
+262,S01002833,Stenton West,230
+263,S01002834,Denbeath Birds,434
+264,S01002835,Denbeath North,338
+265,S01002836,Stenton North,726
+266,S01002837,Methil Shepherds Park,149
+267,S01002838,Methilhill South & Cameron,731
+268,S01002839,Methil Savoy Park,661
+269,S01002840,Pitteuchar South,289
+270,S01002841,Southfield & East Finglassie,162
+271,S01002842,Methil Memorial Park,554
+272,S01002843,Methilhaven,615
+273,S01002844,Eastfield,729
+274,S01002845,Methil Central,129
+275,S01002846,Coaltown of Balgonie,408
+276,S01002847,Pitteuchar East,752
+277,S01002848,Pitteuchar Central,325
+278,S01002849,Pitteuchar West,40
+279,S01002850,Innerleven,856
+280,S01002851,Earlsferry,86
+281,S01002852,Methilhill South West,382
+282,S01002853,Kirkland South,196
+283,S01002854,Methilhill Central & South,310
+284,S01002855,Methilhill East,256
+285,S01002856,Aberhill,460
+286,S01002857,Windygates West,777
+287,S01002858,Warout,175
+288,S01002859,Methilhill North,700
+289,S01002860,Caskieberran East,722
+290,S01002861,Caskieberran West,995
+291,S01002862,Viewfield North & Rimbleton South,698
+292,S01002863,Methilhill North East,289
+293,S01002864,Kirkland North,382
+294,S01002865,Woodside South,612
+295,S01002866,Auchmuty West,280
+296,S01002867,Newcastle West,744
+297,S01002868,Auchmuty East,488
+298,S01002869,Rimbleton East,474
+299,S01002870,Leslie South West & Auchmuir,271
+300,S01002871,Windygates East,951
+301,S01002872,Woodside West,860
+302,S01002873,Rimbleton West,599
+303,S01002874,Tanshall West,744
+304,S01002875,Tanshall East,479
+305,S01002876,Auchmuty North West,961
+306,S01002877,Tanshall Central,27
+307,S01002878,Newcastle East,459
+308,S01002879,Rimbleton North,845
+309,S01002880,Milton of Balgonie,83
+310,S01002881,Leven South,696
+311,S01002882,Leven South West,67
+312,S01002883,Woodside North,782
+313,S01002884,South Parks East,154
+314,S01002885,Cameron Bridge & Duniface,753
+315,S01002886,Leven Mountfleurie West,919
+316,S01002887,Leven Mountfleurie East,389
+317,S01002888,Elie,261
+318,S01002889,Macedonia West,603
+319,S01002890,Macedonia East,22
+320,S01002891,South Parks West,598
+321,S01002892,Leven North West,469
+322,S01002893,Queensway,450
+323,S01002894,Leven Links,326
+324,S01002895,Leven North,267
+325,S01002896,South Parks North,323
+326,S01002897,Scoonie South,895
+327,S01002898,Markinch West,179
+328,S01002899,Prestonhall,786
+329,S01002900,Macedonia North,983
+330,S01002901,Broom South,412
+331,S01002902,St Monans West,544
+332,S01002903,Leslie West,234
+333,S01002904,Markinch East,179
+334,S01002905,Leslie East,974
+335,S01002906,Cadham South & Queensway North,9
+336,S01002907,Markinch North,42
+337,S01002908,Scoonie North,429
+338,S01002909,Kennoway Sandy Brae,399
+339,S01002910,Broom North,719
+340,S01002911,Kennoway South East,375
+341,S01002912,Whinnyknowe,308
+342,S01002913,Leslie Parks,32
+343,S01002914,Cadham,698
+344,S01002915,Pitcoudie,225
+345,S01002916,Kennoway East,277
+346,S01002917,Pittenweem West,400
+347,S01002918,Lundin Links,984
+348,S01002919,Collydean South,355
+349,S01002920,Pittenweem East,889
+350,S01002921,Lower Largo,996
+351,S01002922,Kennoway Central,42
+352,S01002923,St Monans East & Abercrombie,474
+353,S01002924,"Colinsburgh, Kilconquhar & Balcormo",63
+354,S01002925,Balbirnie,117
+355,S01002926,Collydean South West,200
+356,S01002927,Balfarg,709
+357,S01002928,Lower Largo Northern,818
+358,S01002929,Kennoway North West,673
+359,S01002930,Pitcairn,758
+360,S01002931,Kennoway North East,49
+361,S01002932,Balgeddie North,790
+362,S01002933,Anstruther South West,221
+363,S01002934,Collydean North,532
+364,S01002935,Leslie Landward,638
+365,S01002936,Coul,783
+366,S01002937,Anstruther,622
+367,S01002938,Anstruther West,453
+368,S01002939,Star & Kirkforthar,763
+369,S01002940,Anstruther East & Cellardyke,608
+370,S01002941,New Gilston & Upper Largo,534
+371,S01002942,North Pittenweem & Carnbee,496
+372,S01002943,Freuchie North & New Inn,861
+373,S01002944,Kilrenny & Muiredge,274
+374,S01002945,Freuchie South & Muirhead,811
+375,S01002946,Langdyke & Montrave,450
+376,S01002947,Falkland West & Craigmead,563
+377,S01002948,Falkland East & East Lomond,853
+378,S01002949,Largoward Landward,548
+379,S01002950,Kettlebridge & Rameldry,252
+380,S01002951,Crail North,782
+381,S01002952,Kingskettle & Balmalcolm,408
+382,S01002953,Crail South & Fife Ness,712
+383,S01002954,Gateside Landward,57
+384,S01002955,Monkston to Lathrisk,532
+385,S01002956,Ladybank,963
+386,S01002957,Strathmiglo South & Dunshalt,582
+387,S01002958,Peat Inn & Dunino,785
+388,S01002959,Craigrothie & Ceres West,280
+389,S01002960,Ceres East & Pitscottie,937
+390,S01002961,Auchtermuchty East,41
+391,S01002962,Springfield West & Rankeilour,661
+392,S01002963,Auchtermuchty West,227
+393,S01002964,Boarhills & Kingsbarns,595
+394,S01002965,"Monimail, Pitlessie & Cults",767
+395,S01002966,Springfield East,844
+396,S01002967,Collessie & Pitmedden Landward,235
+397,S01002968,Feddinch Landward,135
+398,S01002969,Cupar South South East,459
+399,S01002970,Cupar Westfield South,750
+400,S01002971,Cupar South East,160
+401,S01002972,Cupar South West,336
+402,S01002973,Cupar Westfield,107
+403,S01002974,"Bow of Fife, Tarvit & Balgarvie",91
+404,S01002975,Cupar West,751
+405,S01002976,Cupar North West,401
+406,S01002977,Cupar North,199
+407,S01002978,Cupar East,668
+408,S01002979,Cupar Northern,305
+409,S01002980,Kilrymont East,6
+410,S01002981,Hallow Hill South,396
+411,S01002982,Hallow Hill,335
+412,S01002983,Kilrymont West,249
+413,S01002984,Kilrymont & Langlands,713
+414,S01002985,Canongate,872
+415,S01002986,Langlands West,216
+416,S01002987,East Sands,913
+417,S01002988,Dairsie & Kemback,487
+418,S01002989,Kinness Burn East,721
+419,S01002990,Kinness Burn,259
+420,S01002991,Lawhead & Northbank,940
+421,S01002992,Kinness Burn West,930
+422,S01002993,Strathkinness & Craigton,570
+423,S01002994,Madras & St Leonards,735
+424,S01002995,St Andrews Town Centre,55
+425,S01002996,North Haugh,987
+426,S01002997,St Andrews Abbey,150
+427,S01002998,Newburgh West & Lochmill,901
+428,S01002999,The Scores,633
+429,S01003000,Clayton and Clatto,797
+430,S01003001,"Newburgh North East, & Braeside of Lindores",352
+431,S01003002,Newburgh East,644
+432,S01003003,Flisk Lindores & Luthrie,801
+433,S01003004,Guardbridge,268
+434,S01003005,"Kilmany, Rathillet & Logie",127
+435,S01003006,Balmullo South,210
+436,S01003007,Leuchars West,238
+437,S01003008,Leuchars East,574
+438,S01003009,Leuchars North,757
+439,S01003010,Balmullo North,641
+440,S01003011,"Leuchars North East, St Michaels & Tentsmuir",701
+441,S01003012,Gauldry & Balmerino,481
+442,S01003013,St Fort & Pickletillem,747
+443,S01003014,Wormit West,244
+444,S01003015,Wormit East,724
+445,S01003016,Newport West,376
+446,S01003017,Newport Central,936
+447,S01003018,Newport East,176
+448,S01003019,Tayport South East,639
+449,S01003020,Tayport South,928
+450,S01003021,Newport North East,895
+451,S01003022,Tayport Central,595
+452,S01003023,Tayport West,686
+453,S01003024,Tayport North,396

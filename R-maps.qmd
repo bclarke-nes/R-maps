@@ -1,0 +1,166 @@
+---
+title: "![](images/header.png) Choropleth maps in R"
+author: "Brendan Clarke, NHS Education for Scotland, [brendan.clarke2@nhs.scot](mailto:brendan.clarke2@nhs.scot)"
+date: "`r Sys.Date()`"
+---
+
+```{r}
+#| echo: false
+library(pacman)
+p_load(tidyverse, geojsonio, broom, viridis, mapproj)
+knitr::opts_chunk$set(echo = T, warning = F, message = F, results = 'asis', fig.width = 7, fig.height = 10)
+```
+
+## Introduction
+
+This is a quick introduction to drawing choropleth maps in R. It's presented here in Quarto, but the R code should run happily across different environments. If you want to extract the code easily, you can use the R-maps.R file in this directory.
+
+```{r}
+#| include: FALSE
+knitr::purl("R-maps.qmd")
+```
+
+Choropleth maps are maps that show a summary statistic using colour. That means that we colour sections of the map differently depending on some summary measure. As with most projects in R, nearly all the work involves getting your data into the right shape. For this project, we'll use some simple values data loaded from a .csv, and some geographical data. Let's start with the simple part of that, which is some made-up data showing an imaginary summary count across the 32 Local Authority Districts of Scotland:
+
+```{r}
+values_data <- read_csv("data/national_values.csv")
+
+values_data %>% head() %>% knitr::kable()
+```
+
+We can produce this as a standard ggplot object first, but it's not a great way to show differences across the country:
+
+```{r}
+values_data %>%
+  ggplot(aes(x=reorder(LAD13NM, -value), y=value, label=LAD13NM)) +
+  geom_col() +
+  coord_flip() +
+  xlab("Local Authority District")
+```
+
+## Packages
+
+There are some specific packages needed:
+
+-   [geojsonio](https://cran.r-project.org/package=geojsonio), to load the geoJSON data that we'll use to draw the map
+-   [broom](https://cran.r-project.org/package=broom), to handle parts of the conversion of this geoJSON data into a tibble
+-   [viridis](https://cran.r-project.org/package=viridis) and [mapproj](https://cran.r-project.org/package=mapproj) to do bits of the mapping work for us
+
+```{r}
+#| eval: FALSE
+library(pacman)
+p_load(tidyverse, geojsonio, broom, viridis, mapproj)
+```
+
+## Geographical data
+
+The next step is finding a shape file with appropriate region boundaries. This demonstration uses a local authority district file from https://martinjc.github.io/UK-GeoJSON/ that covers the whole of Scotland, broken down into the constituent 32 Local Authority Districts.
+
+You'll need to download that data, or copy the `topo_lad.json` file from the data directory if you're replicating this code.
+
+Once downloaded, we load the shape file using `geojson_read()`:
+
+```{r}
+Scot_LAD <- geojson_read("data/topo_lad.json", what="sp")
+```
+
+That loads the geographical data as a "[Large SpatialPolygonsDataFrame](https://www.rdocumentation.org/packages/sp/versions/1.5-0/topics/SpatialPolygonsDataFrame-class)" (which is a class that I'll freely admit not having encountered before writing this). Conveniently, we can easily convert this to a more standard data format (a tibble) using `tidy()`, but we need to do one thing before that can happen.
+
+This is to extract the names of the various Local Authority Districts from this Large SpatialPolygonsDataFrame created by `geojson_read()`. This is important, because we'll need some way of connecting our value data with the map that we're drawing, and we'll lose the human-readable district names when we convert the spatial polygon file to a tibble:
+
+```{r}
+region_lookup <- tibble(id=1:length(Scot_LAD@data[["id"]]), id_json = Scot_LAD@data[["id"]], LAD13NM = Scot_LAD@data[["LAD13NM"]])
+```
+
+Next, we transform the shape file into a tibble using `tidy()`, and add back the region names:
+
+```{r}
+Scot_LAD <- Scot_LAD %>%
+  tidy() %>%
+  mutate(id = as.numeric(id)) %>%
+  left_join(region_lookup, on=id, keep=F) 
+```
+
+![A preview of our geographical data, now including human-readable names](images/paste-0AAA89BD.png){width="640"}
+
+## Adding our data into the geographical data
+
+This is really straightforward - just a simple `left_join()` between our values data and the shape file:
+
+```{r}
+Scot_LAD <- Scot_LAD %>%
+  left_join(values_data, on=LAD13NM, keep=F)
+```
+
+## Plotting the graph
+
+Plotting the graph is simple too We use `geom_polygon()` to plot the shape file data, filling by the values from our values_data:
+
+```{r}
+Scot_LAD %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
+  theme_void() +
+  coord_map()
+```
+
+## Epicycles and refinements
+
+First, a simple filter will work to show single Local Authority Districts:
+
+```{r}
+Scot_LAD %>%
+  filter(LAD13NM == "Fife") %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group = group, fill=value)) +
+  theme_void() +
+  coord_map()
+```
+
+If we want to label the districts, we have to get a bit creative by manufacturing the [centroids](https://engineeringstatics.org/Chapter_07-centroids.html) (real word, I've learned today) of the districts:
+
+```{r}
+centroids <- Scot_LAD %>%
+  group_by(LAD13NM) %>%
+  summarise(mean_long = mean(long), mean_lat=mean(lat))
+
+Scot_LAD %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group = group, fill=value)) +
+  geom_label(data=centroids, aes(x=mean_long, y=mean_lat, label=LAD13NM), size=3) +
+  theme_void() +
+  coord_map() +
+  labs(id)
+```
+For a regional map, you'll need to go through effectively the same process again. The reason for this is that the data zones aren't coded into the national shape file. However, same process again is good practice, so here we go. Let's use the data for Fife, broken into data zones. We'll need to provide some data here:
+
++ a new shape file, `topo_S12000015.json` (again downloaded from https://martinjc.github.io/UK-GeoJSON/)
++ some new values data too that matches the 400-odd data zones across Fife in the `fife_values.csv` file:
+
+```{r}
+fife_LAD <- geojson_read("data/topo_S12000015.json", what="sp")
+
+fife_region_lookup <- tibble(id=1:length(fife_LAD@data[["id"]]), id_json = fife_LAD@data[["id"]], DZ_NAME = fife_LAD@data[["DZ_NAME"]])
+
+fife_values_data <- read_csv("data/fife_values.csv") %>%
+  mutate(id = as.numeric(id))
+
+fife_LAD <- fife_LAD %>%
+  tidy() %>%
+  mutate(id = as.numeric(id)) %>%
+  left_join(fife_values_data, on=id, keep=F) 
+
+fife_LAD %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
+  theme_void() +
+  coord_map() +
+  ggtitle("Fife map")
+
+```
+
+
