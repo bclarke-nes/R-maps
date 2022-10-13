@@ -4,6 +4,7 @@
 /archive
 /R-maps_*
 _quarto.yml
+readme_*
 
 # History files
 .Rhistory
