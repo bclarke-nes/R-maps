@@ -4,11 +4,13 @@ author: "Brendan Clarke, NHS Education for Scotland, [brendan.clarke2@nhs.scot](
 date: "`r Sys.Date()`"
 ---
 
+::: {.panel-tabset}
+
 ```{r}
 #| echo: false
 library(pacman)
-p_load(tidyverse, geojsonio, broom, viridis, mapproj)
-knitr::opts_chunk$set(echo = T, warning = F, message = F, results = 'asis', fig.width = 7, fig.height = 10)
+p_load(tidyverse, geojsonio, broom, viridis, mapproj, sf)
+knitr::opts_chunk$set(echo = T, warning = F, message = F, results = 'asis', fig.width = 7, fig.height = 7)
 ```
 
 ## Introduction
@@ -38,13 +40,14 @@ values_data %>%
   xlab("Local Authority District")
 ```
 
-## Packages
+### Packages
 
 There are some specific packages needed:
 
 -   [geojsonio](https://cran.r-project.org/package=geojsonio), to load the geoJSON data that we'll use to draw the map
 -   [broom](https://cran.r-project.org/package=broom), to handle parts of the conversion of this geoJSON data into a tibble
 -   [viridis](https://cran.r-project.org/package=viridis) and [mapproj](https://cran.r-project.org/package=mapproj) to do bits of the mapping work for us
+- [sf](https://cran.r-project.org/web/packages/sf/index.html) to open the data we'll use later for postcodes
 
 ```{r}
 #| eval: FALSE
@@ -83,16 +86,16 @@ Scot_LAD <- Scot_LAD %>%
 
 ![A preview of our geographical data, now including human-readable names](images/paste-0AAA89BD.png){width="640"}
 
-## Adding our data into the geographical data
+## Adding data
 
-This is really straightforward - just a simple `left_join()` between our values data and the shape file:
+Adding our own data into the geographical data is really straightforward - just a simple `left_join()` between our values data and the shape file:
 
 ```{r}
 Scot_LAD <- Scot_LAD %>%
   left_join(values_data, on=LAD13NM, keep=F)
 ```
 
-## Plotting the graph
+## Plotting
 
 Plotting the graph is simple too We use `geom_polygon()` to plot the shape file data, filling by the values from our values_data:
 
@@ -137,7 +140,7 @@ Scot_LAD %>%
 ```
 For a regional map, you'll need to go through effectively the same process again. The reason for this is that the data zones aren't coded into the national shape file. However, same process again is good practice, so here we go. Let's use the data for Fife, broken into data zones. We'll need to provide some data here:
 
-+ a new shape file, `topo_S12000015.json` (again downloaded from https://martinjc.github.io/UK-GeoJSON/)
++ a new shape file, `topo_S12000015.json` (again downloaded from [https://martinjc.github.io/UK-GeoJSON/](https://martinjc.github.io/UK-GeoJSON/))
 + some new values data too that matches the 400-odd data zones across Fife in the `fife_values.csv` file:
 
 ```{r}
@@ -162,5 +165,171 @@ fife_LAD %>%
   ggtitle("Fife map")
 
 ```
+## Postcodes
+
+Postcodes are a bit tricky. As far as I can tell, as of October 2022 there is no up-to-date open data that can be used to demonstrate the boundary of a post code. The boundaries are a [commercial OS product](https://www.ordnancesurvey.co.uk/business-government/products/code-point-polygons). However, there is some open data that - while not kept up to date - can be used to [approximate the shape of postcodes](https://longair.net/blog/2021/08/23/open-data-gb-postcode-unit-boundaries/). So we'll demonstrate two approaches here - one that uses up-to-date data on postcode centroids, and a second that uses data from 2020 to show the area covered by postcodes.
+
+### Postcode centroids
+This data comes from Ordnance Survey OpenData - [Code-Point(R) Open](https://osdatahub.os.uk/downloads/open/CodePointOpen). At source, this is whole-UK data, and so should come with a word of warning about size and performance issues. It's [open licenced](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/), which allows us to adapt the data, so for the purposes of this tutorial, I've excerpted the cut out the Scottish data to keep things manageable, and saved as an RDS in the data directory of this project. The code to do this is included below for reference.
+
+```{r}
+#| eval: FALSE
+
+# very slow code to create Scottish postcode data
+# codepo_gn <- read_sf("data/codepo_gb.gpkg") %>%
+# filter(str_detect(Admin_district_code, "S"))
+# saveRDS(codepo_gn,file="data/codepo_SCOT.RDS")
+# might consider dl directly from https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=GeoPackage&redirect
+```
 
 
+```{r}
+# read the Scottish postcode data from file
+codepo_SCOT <- readRDS(file="data/codepo_SCOT.RDS")
+```
+
+Once we've read in the postcode data, we can plot it using `geom_sf()`:
+```{r}
+# Simple map of postcode centroids using geom_sf()
+codepo_SCOT %>%
+  filter(str_detect(Postcode, "KY14")) %>%
+  ggplot() +
+  geom_sf()
+```
+
+We can also use the related `geom_sf_label()`, although I'm not sure at all if this is useful
+
+```{r}
+codepo_SCOT %>%
+  filter(str_detect(Postcode, "KY14 ")) %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf_label(aes(label=Postcode))
+```
+
+Okay, interesting enough - but things would be improved by overlaying these points in the void on a proper map. We can use our code from before, filtering to give us just the region of interest:
+
+```{r}
+# trying to overlay the postcodes on a regional map
+Scot_LAD %>%
+  filter(LAD13NM == "Fife") %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group = group, fill=value)) +
+  theme_void() +
+  geom_sf(data=codepo_SCOT %>% filter(str_detect(Postcode, "KY14 ")), aes(label=Postcode)) +
+  coord_sf(default_crs = sf::st_crs(4326))
+```
+Note there's a bit of fooling around with the coordinate system in the last line of this code. I don't understand this properly, but broadly it's a way of describing how the different coordinate systems used in the different `geom` layers should be lined up.
+
+Let's add some value information into our map. We'll use the data that we created while demonstrating our detailed map of Fife from earlier:
+```{r}
+fife_LAD %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
+  theme_void() +
+  geom_sf(data=codepo_SCOT %>% filter(str_detect(Postcode, "KY14")), color="white") +
+  coord_sf(default_crs = sf::st_crs(4326)) +
+  ggtitle("Fife map with KY14 postcodes")
+
+```
+
+### Postcode regions
+So that's approach one - use up-to-date centroid data. The alternative is to use some older data (from 2020) that approximates the shape of each postcode. This work owes a huge debt to the author of that data, [Mark Longair](https://github.com/mhl). You can read a lovely clear description of [how the data was generated, and how it works, on Mark's blog](https://longair.net/blog/2021/08/23/open-data-gb-postcode-unit-boundaries/). The data itself is a large (~1GB compressed, ~4GB unpacked) group of GeoJSON shapefiles. This means that we can open them in the same way as the Scotland shapefile that we started this tutorial with. **You'll need to download the data yourself** as it's too large to include here, weighing in at over 4GB when extracted. I have included some sample files from Fife again to demonstrate.
+
+Note too that there are four kinds of data in that GB postcode set:
++ postcode areas
++ districts
++ sectors
++ units
+
+I'll demonstrate using the finest-grained of this data, the units. As before, we load the data using `geojson_read()`:
+
+```{r}
+KY14_units <- geojson_read("data/KY14.geojson", what="sp")
+```
+
+Then, again, we pull the postcodes out to give us a way of indexing the regions on our map by postcode:
+```{r}
+KY14_postcode_lookup <- tibble(id=1:length(KY14_units@data[["postcodes"]]), postcode = KY14_units@data[["postcodes"]])
+```
+
+This is probably the sanest point to join any values data that we want to include. I'll do that by writing out the `KY14_postcode_lookup` tibble, and reading it back with values inserted:
+
+```{r}
+#| eval: false
+write_csv(KY14_postcode_lookup, "data/KY14_postcode_lookup.csv")
+```
+(insert your values here)
+```{r}
+KY14_postcode_lookup <- read_csv("data/KY14_postcode_lookup_values.csv")
+```
+
+Then `tidy()` the shapefile, and `left_join()` the postcodes and values back into it:
+```{r}
+KY14_units_tidy <- KY14_units %>%
+  tidy() %>%
+  mutate(id = as.numeric(id)) %>%
+  left_join(KY14_postcode_lookup, on=id, keep=F)
+```
+
+Then we can [MacGyver](https://en.wikipedia.org/wiki/MacGyver_in_popular_culture) the postcode centroids, as before:
+
+```{r}
+KY14_centroids <- KY14_units_tidy %>%
+  select(postcode, lat, long) %>%
+  group_by(postcode) %>%
+  mutate(mean_long = mean(long), mean_lat = mean(lat)) %>%
+  ungroup() %>%
+  select(-c(lat, long))  %>%
+  distinct()
+```
+
+Then plot:
+```{r}
+KY14_units_tidy %>%
+  #filter(str_detect(postcode, "IV2 3P")) %>%
+  ggplot() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
+  theme_void() +
+  coord_map() +
+  ggtitle("KY14 postcodes") +
+  theme(legend.position = "none")
+```
+
+We can also overlay this postcode mapping with labels:
+```{r}
+KY14_units_tidy %>%
+  #filter(str_detect(postcode, "IV2")) %>%
+  ggplot() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
+  geom_label(data = KY14_centroids, aes(x=mean_long, y=mean_lat, label=postcode), size=3) +
+  theme_void() +
+  coord_map() +
+  ggtitle("KY14 postcodes choropleth") +
+  theme(legend.position = "none")
+```
+Here, I think that the apparently anomalous KY14 7YB is a [large-user postcode](https://www.ons.gov.uk/methodology/geography/ukgeographies/postalgeography), located outwith the main KY14 grouping.
+
+## Copyright
+
+The data in this archive is derived from NSUL (published by the ONS)
+and Boundary-Line (published by Ordnance Survey), which are both
+licensed under the Open Government License version 3. You must abide
+by the terms of these licenses and include the following copyright
+notices:
+
+Contains OS data © Crown copyright and database right 2020
+Contains Royal Mail data © Royal Mail copyright and database right 2020
+Source: Office for National Statistics licensed under the Open Government Licence v.3.0
+
+For the postcode regions, please refer to the [blogpost and licencing details at Mark Longair's site](https://longair.net/blog/2021/08/23/open-data-gb-postcode-unit-boundaries/). I'll reproducing his warning regarding the boundary data, which is based on 2020 data and as far as I can see will not be updated:
+
+> These boundaries are known to be approximate - they are provided in case
+they are of interest and use, but are only rough representations of the
+postcode boundaries due to limitations of the open address data currently
+available. In other words, there are no guarantees about the quality of
+this data or its suitability for any use; use it at your own risk.
+
+:::

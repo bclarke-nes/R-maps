@@ -1,7 +1,7 @@
 ## ----r------------------------------------------------------------------------
 library(pacman)
-p_load(tidyverse, geojsonio, broom, viridis, mapproj)
-knitr::opts_chunk$set(echo = T, warning = F, message = F, results = 'asis', fig.width = 7, fig.height = 10)
+p_load(tidyverse, geojsonio, broom, viridis, mapproj, sf)
+knitr::opts_chunk$set(echo = T, warning = F, message = F, results = 'asis', fig.width = 7, fig.height = 7)
 
 
 ## ----r------------------------------------------------------------------------
@@ -32,12 +32,10 @@ Scot_LAD <- geojson_read("data/topo_lad.json", what="sp")
 
 
 ## ----r------------------------------------------------------------------------
-# make lookup to get human-readable regions
 region_lookup <- tibble(id=1:length(Scot_LAD@data[["id"]]), id_json = Scot_LAD@data[["id"]], LAD13NM = Scot_LAD@data[["LAD13NM"]])
 
 
 ## ----r------------------------------------------------------------------------
-# transform the shape file into a tidy tibble
 Scot_LAD <- Scot_LAD %>%
   tidy() %>%
   mutate(id = as.numeric(id)) %>%
@@ -45,20 +43,17 @@ Scot_LAD <- Scot_LAD %>%
 
 
 ## ----r------------------------------------------------------------------------
-# then join values to the shape file
 Scot_LAD <- Scot_LAD %>%
   left_join(values_data, on=LAD13NM, keep=F)
 
 
 ## ----r------------------------------------------------------------------------
-
 Scot_LAD %>%
   ggplot() +
   scale_fill_viridis() +
   geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
   theme_void() +
   coord_map()
-
 
 
 ## ----r------------------------------------------------------------------------
@@ -69,7 +64,6 @@ Scot_LAD %>%
   geom_polygon(aes( x = long, y = lat, group = group, fill=value)) +
   theme_void() +
   coord_map()
-
 
 
 ## ----r------------------------------------------------------------------------
@@ -108,4 +102,113 @@ fife_LAD %>%
   coord_map() +
   ggtitle("Fife map")
 
+
+
+## ----r------------------------------------------------------------------------
+# very slow code to create Scottish postcode data
+# codepo_gn <- read_sf("data/codepo_gb.gpkg") %>%
+# filter(str_detect(Admin_district_code, "S"))
+# saveRDS(codepo_gn,file="data/codepo_SCOT.RDS")
+# might consider dl directly from https://api.os.uk/downloads/v1/products/CodePointOpen/downloads?area=GB&format=GeoPackage&redirect
+
+
+## ----r------------------------------------------------------------------------
+# read the Scottish postcode data from file
+codepo_SCOT <- readRDS(file="data/codepo_SCOT.RDS")
+
+
+## ----r------------------------------------------------------------------------
+# Simple map of postcode centroids using geom_sf()
+codepo_SCOT %>%
+  filter(str_detect(Postcode, "KY14")) %>%
+  ggplot() +
+  geom_sf()
+
+
+## ----r------------------------------------------------------------------------
+codepo_SCOT %>%
+  filter(str_detect(Postcode, "KY14 ")) %>%
+  ggplot() +
+  geom_sf() +
+  geom_sf_label(aes(label=Postcode))
+
+
+## ----r------------------------------------------------------------------------
+# trying to overlay the postcodes on a regional map
+Scot_LAD %>%
+  filter(LAD13NM == "Fife") %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group = group, fill=value)) +
+  theme_void() +
+  geom_sf(data=codepo_SCOT %>% filter(str_detect(Postcode, "KY14 ")), aes(label=Postcode)) +
+  coord_sf(default_crs = sf::st_crs(4326))
+
+
+## ----r------------------------------------------------------------------------
+fife_LAD %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
+  theme_void() +
+  geom_sf(data=codepo_SCOT %>% filter(str_detect(Postcode, "KY14")), color="white") +
+  coord_sf(default_crs = sf::st_crs(4326)) +
+  ggtitle("Fife map with KY14 postcodes")
+
+
+
+## ----r------------------------------------------------------------------------
+KY14_units <- geojson_read("data/KY14.geojson", what="sp")
+
+
+## ----r------------------------------------------------------------------------
+KY14_postcode_lookup <- tibble(id=1:length(KY14_units@data[["postcodes"]]), postcode = KY14_units@data[["postcodes"]])
+
+
+## ----r------------------------------------------------------------------------
+write_csv(KY14_postcode_lookup, "data/KY14_postcode_lookup.csv")
+
+
+## ----r------------------------------------------------------------------------
+KY14_postcode_lookup <- read_csv("data/KY14_postcode_lookup_values.csv")
+
+
+## ----r------------------------------------------------------------------------
+KY14_units_tidy <- KY14_units %>%
+  tidy() %>%
+  mutate(id = as.numeric(id)) %>%
+  left_join(KY14_postcode_lookup, on=id, keep=F)
+
+
+## ----r------------------------------------------------------------------------
+KY14_centroids <- KY14_units_tidy %>%
+  select(postcode, lat, long) %>%
+  group_by(postcode) %>%
+  mutate(mean_long = mean(long), mean_lat = mean(lat)) %>%
+  ungroup() %>%
+  select(-c(lat, long))  %>%
+  distinct()
+
+
+## ----r------------------------------------------------------------------------
+KY14_units_tidy %>%
+  #filter(str_detect(postcode, "IV2 3P")) %>%
+  ggplot() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
+  theme_void() +
+  coord_map() +
+  ggtitle("KY14 postcodes") +
+  theme(legend.position = "none")
+
+
+## ----r------------------------------------------------------------------------
+KY14_units_tidy %>%
+  #filter(str_detect(postcode, "IV2")) %>%
+  ggplot() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
+  geom_label(data = KY14_centroids, aes(x=mean_long, y=mean_lat, label=postcode), size=3) +
+  theme_void() +
+  coord_map() +
+  ggtitle("KY14 postcodes choropleth") +
+  theme(legend.position = "none")
 
