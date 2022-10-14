@@ -23,11 +23,6 @@ values_data %>%
 
 
 ## ----r------------------------------------------------------------------------
-library(pacman)
-p_load(tidyverse, geojsonio, broom, viridis, mapproj)
-
-
-## ----r------------------------------------------------------------------------
 Scot_LAD <- geojson_read("data/topo_lad.json", what="sp")
 
 

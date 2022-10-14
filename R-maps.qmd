@@ -1,7 +1,7 @@
 ---
 title: "![](images/header.png) Choropleth maps in R"
 author: "Brendan Clarke, NHS Education for Scotland, [brendan.clarke2@nhs.scot](mailto:brendan.clarke2@nhs.scot)"
-date: "`r Sys.Date()`"
+date: "2022-10-14"
 ---
 
 ::: {.panel-tabset}
@@ -42,18 +42,12 @@ values_data %>%
 
 ### Packages
 
-There are some specific packages needed:
+There are some specific packages needed, which we've loaded at the head of this project:
 
--   [geojsonio](https://cran.r-project.org/package=geojsonio), to load the geoJSON data that we'll use to draw the map
--   [broom](https://cran.r-project.org/package=broom), to handle parts of the conversion of this geoJSON data into a tibble
--   [viridis](https://cran.r-project.org/package=viridis) and [mapproj](https://cran.r-project.org/package=mapproj) to do bits of the mapping work for us
+- [geojsonio](https://cran.r-project.org/package=geojsonio), to load the geoJSON data that we'll use to draw the map
+- [broom](https://cran.r-project.org/package=broom), to handle parts of the conversion of this geoJSON data into a tibble
+- [viridis](https://cran.r-project.org/package=viridis) and [mapproj](https://cran.r-project.org/package=mapproj) to do bits of the mapping work for us
 - [sf](https://cran.r-project.org/web/packages/sf/index.html) to open the data we'll use later for postcodes
-
-```{r}
-#| eval: FALSE
-library(pacman)
-p_load(tidyverse, geojsonio, broom, viridis, mapproj)
-```
 
 ## Geographical data
 
