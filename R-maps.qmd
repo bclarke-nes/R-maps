@@ -1,7 +1,7 @@
 ---
 title: "![](images/header.png) Choropleth maps in R"
 author: "Brendan Clarke, NHS Education for Scotland, [brendan.clarke2@nhs.scot](mailto:brendan.clarke2@nhs.scot)"
-date: "2022-10-14"
+date: "2022-10-19"
 ---
 
 ::: {.panel-tabset}
@@ -379,7 +379,6 @@ scot +
 We can also overlay this postcode mapping with labels:
 ```{r}
 KY14_units_tidy %>%
-  #filter(str_detect(postcode, "IV2")) %>%
   ggplot() +
   geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
   geom_label(data = KY14_centroids, aes(x=mean_long, y=mean_lat, label=postcode), size=3) +
