@@ -1,6 +1,6 @@
 ## ----r------------------------------------------------------------------------
 library(pacman)
-p_load(tidyverse, geojsonio, broom, viridis, mapproj, sf)
+p_load(tidyverse, geojsonio, broom, viridis, mapproj, sf, PostcodesioR, stringr)
 knitr::opts_chunk$set(echo = T, warning = F, message = F, results = 'asis', fig.width = 7, fig.height = 7)
 
 
@@ -43,12 +43,14 @@ Scot_LAD <- Scot_LAD %>%
 
 
 ## ----r------------------------------------------------------------------------
-Scot_LAD %>%
+scot <- Scot_LAD %>%
   ggplot() +
   scale_fill_viridis() +
   geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
   theme_void() +
   coord_map()
+
+scot
 
 
 ## ----r------------------------------------------------------------------------
@@ -97,6 +99,45 @@ fife_LAD %>%
   coord_map() +
   ggtitle("Fife map")
 
+
+
+## ----r------------------------------------------------------------------------
+dz_2011 <- geojson_read("data/SG_DataZoneBdry_2011/SG_DataZone_Bdry_2011.shp", what="sp")
+
+
+## ----r------------------------------------------------------------------------
+dz_2011_lookup <- tibble(id=1:length(dz_2011@data[["DataZone"]]), DataZone = dz_2011@data[["DataZone"]], dz_name = dz_2011@data[["Name"]])
+
+dz_2011 <- dz_2011 %>%
+  tidy()
+
+
+## ----r------------------------------------------------------------------------
+SIMD2020v2 <- read_csv("https://www.opendata.nhs.scot/dataset/78d41fa9-1a62-4f7b-9edb-3e8522a93378/resource/acade396-8430-4b34-895a-b3e757fa346e/download/simd2020v2_22062020.csv")
+
+SIMD2020v2_dz <- dz_2011_lookup %>%
+  left_join(SIMD2020v2, by="DataZone")
+
+
+## ----r------------------------------------------------------------------------
+dz_2011_joined <- dz_2011 %>%
+  mutate(id = as.numeric(id)) %>%
+  left_join(SIMD2020v2_dz, on=id, keep=F) 
+
+
+## ----r------------------------------------------------------------------------
+dz_2011_joined %>%
+  filter(HB == "S08000020") %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=SIMD2020V2Rank)) +
+  theme_void() +
+  ggtitle("Grampian SIMD2020v2 rank by 2011 data zone") +
+  coord_sf(default_crs = sf::st_crs(4326))
+
+
+## ----r------------------------------------------------------------------------
+knitr::include_graphics("images/grampian_map.png")
 
 
 ## ----r------------------------------------------------------------------------
@@ -186,14 +227,29 @@ KY14_centroids <- KY14_units_tidy %>%
 
 
 ## ----r------------------------------------------------------------------------
-KY14_units_tidy %>%
-  #filter(str_detect(postcode, "IV2 3P")) %>%
+ky14 <- KY14_units_tidy %>%
   ggplot() +
   geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
   theme_void() +
   coord_map() +
   ggtitle("KY14 postcodes") +
   theme(legend.position = "none")
+
+ky14
+
+
+## ----r------------------------------------------------------------------------
+postcode_lookup("KY14 7AP") %>% t() %>% knitr::kable()
+
+
+## ----r------------------------------------------------------------------------
+ky14 +
+  geom_point(data = postcode_lookup("KY14 7AP"), aes(x=longitude, y=latitude), size=3, color="white") +
+  geom_label(data = postcode_lookup("KY14 7AP"), aes(x=(longitude+0.03), y=latitude, label=postcode))
+
+scot +
+  geom_point(data = postcode_lookup("KY14 7AP"), aes(x=longitude, y=latitude), size=5, shape=10, color="black") +
+  geom_label(data = postcode_lookup("KY14 7AP"), aes(x=(longitude+1), y=latitude, label=postcode))
 
 
 ## ----r------------------------------------------------------------------------

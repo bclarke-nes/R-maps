@@ -9,7 +9,7 @@ date: "2022-10-14"
 ```{r}
 #| echo: false
 library(pacman)
-p_load(tidyverse, geojsonio, broom, viridis, mapproj, sf)
+p_load(tidyverse, geojsonio, broom, viridis, mapproj, sf, PostcodesioR, stringr)
 knitr::opts_chunk$set(echo = T, warning = F, message = F, results = 'asis', fig.width = 7, fig.height = 7)
 ```
 
@@ -48,10 +48,13 @@ There are some specific packages needed, which we've loaded at the head of this 
 - [broom](https://cran.r-project.org/package=broom), to handle parts of the conversion of this geoJSON data into a tibble
 - [viridis](https://cran.r-project.org/package=viridis) and [mapproj](https://cran.r-project.org/package=mapproj) to do bits of the mapping work for us
 - [sf](https://cran.r-project.org/web/packages/sf/index.html) to open the data we'll use later for postcodes
+- [PostcodesioR](https://github.com/ropensci/PostcodesioR) for postcode lookup
 
 ## Geographical data
 
-The next step is finding a shape file with appropriate region boundaries. This demonstration uses a local authority district file from https://martinjc.github.io/UK-GeoJSON/ that covers the whole of Scotland, broken down into the constituent 32 Local Authority Districts.
+The next step is finding a shape file with appropriate region boundaries. Choosing a shape file can be complicated, because different data will use different ways of referring to regions. In this section, we'll use a local authority district file from [https://martinjc.github.io/UK-GeoJSON/](https://martinjc.github.io/UK-GeoJSON/) that covers the whole of Scotland, broken down into the constituent 32 Local Authority Districts.
+
+Note that this data uses [datazones from 2001](https://www.opendata.nhs.scot/dataset/geography-codes-and-labels), and an alternative approach for newer data is described in the section of this training dealing with refinements. While it may not be suitable for all purposes, this older shape data is freely available and easy to work with, which makes it useful as the basis for building your first choropleth map.
 
 You'll need to download that data, or copy the `topo_lad.json` file from the data directory if you're replicating this code.
 
@@ -80,7 +83,7 @@ Scot_LAD <- Scot_LAD %>%
 
 ![A preview of our geographical data, now including human-readable names](images/paste-0AAA89BD.png){width="640"}
 
-## Adding data
+## Adding data and plotting
 
 Adding our own data into the geographical data is really straightforward - just a simple `left_join()` between our values data and the shape file:
 
@@ -89,19 +92,18 @@ Scot_LAD <- Scot_LAD %>%
   left_join(values_data, on=LAD13NM, keep=F)
 ```
 
-## Plotting
-
 Plotting the graph is simple too We use `geom_polygon()` to plot the shape file data, filling by the values from our values_data:
 
 ```{r}
-Scot_LAD %>%
+scot <- Scot_LAD %>%
   ggplot() +
   scale_fill_viridis() +
   geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
   theme_void() +
   coord_map()
-```
 
+scot
+```
 ## Epicycles and refinements
 
 First, a simple filter will work to show single Local Authority Districts:
@@ -159,6 +161,70 @@ fife_LAD %>%
   ggtitle("Fife map")
 
 ```
+
+## Newer datazones
+Data zones are small, stable, units with a population of about 500-1000 people. There's a useful concise [explainer for data zones](https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/01/small-area-statistics-reference-materials/documents/data-zone-matching---quick-guide-2001-2011/data-zone-matching---quick-guide-2001-2011/govscot%3Adocument/Data%2BZone%2BMatching%2B-%2BQuick%2BGuide%2B%25282001-2011%2529.pdf) available from the Scottish Government neighbourhood statistics team.
+
+Some newer health and care data uses the newer 2011 data zones - the [Scottish index of multiple deprivation 2020v2](https://www.opendata.nhs.scot/dataset/scottish-index-of-multiple-deprivation/resource/acade396-8430-4b34-895a-b3e757fa346e) is a good example. Unfortunately, this kind of data won't work with the mapping technique described above, because the data zones will not match up properly.
+
+So we'll need some new shapefile data to plot the 2011 data zones. This can be found on the [spatialdata.gov.scot](https://spatialdata.gov.scot/geonetwork/srv/api/records/7d3e8709-98fa-4d71-867c-d5c8293823f2) site. As previously, we should download and extract this data. **Note that I won't do this here, because the data is too large, and makes the report render slowly (several minutes)**. So the code here is set to not run, and you'll need to download the shapefile and switch on the code chunks if you want to replicate/modify this section.
+
+```{r}
+#| eval: false
+
+dz_2011 <- geojson_read("data/SG_DataZoneBdry_2011/SG_DataZone_Bdry_2011.shp", what="sp")
+```
+
+Then load, extract the data zone labels, and tidy (as before):
+```{r}
+#| eval: false
+
+dz_2011_lookup <- tibble(id=1:length(dz_2011@data[["DataZone"]]), DataZone = dz_2011@data[["DataZone"]], dz_name = dz_2011@data[["Name"]])
+
+dz_2011 <- dz_2011 %>%
+  tidy()
+```
+Note that we've used a slightly different column naming scheme compared to the earlier version to simplify joining the data to the SIMD2020 in the next step. We can now load and `left-join()` the Scottish index of multiple deprivation 2020v2 data to the lookup to give us a key that will match the shape file, and will contain the deprivation values that we're interested in plotting:
+
+```{r}
+#| eval: false
+
+SIMD2020v2 <- read_csv("https://www.opendata.nhs.scot/dataset/78d41fa9-1a62-4f7b-9edb-3e8522a93378/resource/acade396-8430-4b34-895a-b3e757fa346e/download/simd2020v2_22062020.csv")
+
+SIMD2020v2_dz <- dz_2011_lookup %>%
+  left_join(SIMD2020v2, by="DataZone")
+```
+
+And then `left-join()` that value data into our shape data:
+
+```{r}
+#| eval: false
+dz_2011_joined <- dz_2011 %>%
+  mutate(id = as.numeric(id)) %>%
+  left_join(SIMD2020v2_dz, on=id, keep=F) 
+```
+
+Plot as before:
+```{r}
+#| eval: false
+dz_2011_joined %>%
+  filter(HB == "S08000020") %>%
+  ggplot() +
+  scale_fill_viridis() +
+  geom_polygon(aes( x = long, y = lat, group=group, fill=SIMD2020V2Rank)) +
+  theme_void() +
+  ggtitle("Grampian SIMD2020v2 rank by 2011 data zone") +
+  coord_sf(default_crs = sf::st_crs(4326))
+```
+
+```{r}
+#| echo: false
+knitr::include_graphics("images/grampian_map.png")
+```
+
+
+One wrinkle here is that the coordinates in this data are given as easting/northing values using  [OSGN](https://en.wikipedia.org/wiki/Ordnance_Survey_National_Grid) values, rather than degrees of long/lat. The last line of code manages that (and if you omit it, you'll end up with an empty plot area).
+
 ## Postcodes
 
 Postcodes are a bit tricky. As far as I can tell, as of October 2022 there is no up-to-date open data that can be used to demonstrate the boundary of a post code. The boundaries are a [commercial OS product](https://www.ordnancesurvey.co.uk/business-government/products/code-point-polygons). However, there is some open data that - while not kept up to date - can be used to [approximate the shape of postcodes](https://longair.net/blog/2021/08/23/open-data-gb-postcode-unit-boundaries/). So we'll demonstrate two approaches here - one that uses up-to-date data on postcode centroids, and a second that uses data from 2020 to show the area covered by postcodes.
@@ -233,6 +299,7 @@ fife_LAD %>%
 So that's approach one - use up-to-date centroid data. The alternative is to use some older data (from 2020) that approximates the shape of each postcode. This work owes a huge debt to the author of that data, [Mark Longair](https://github.com/mhl). You can read a lovely clear description of [how the data was generated, and how it works, on Mark's blog](https://longair.net/blog/2021/08/23/open-data-gb-postcode-unit-boundaries/). The data itself is a large (~1GB compressed, ~4GB unpacked) group of GeoJSON shapefiles. This means that we can open them in the same way as the Scotland shapefile that we started this tutorial with. **You'll need to download the data yourself** as it's too large to include here, weighing in at over 4GB when extracted. I have included some sample files from Fife again to demonstrate.
 
 Note too that there are four kinds of data in that GB postcode set:
+
 + postcode areas
 + districts
 + sectors
@@ -282,14 +349,31 @@ KY14_centroids <- KY14_units_tidy %>%
 
 Then plot:
 ```{r}
-KY14_units_tidy %>%
-  #filter(str_detect(postcode, "IV2 3P")) %>%
+ky14 <- KY14_units_tidy %>%
   ggplot() +
   geom_polygon(aes( x = long, y = lat, group=group, fill=value)) +
   theme_void() +
   coord_map() +
   ggtitle("KY14 postcodes") +
   theme(legend.position = "none")
+
+ky14
+```
+
+To add single points by postcode, use `postcode_lookup()`. This provides lots of options for plotting your postcode:
+
+```{r}
+postcode_lookup("KY14 7AP") %>% t() %>% knitr::kable()
+```
+
+```{r}
+ky14 +
+  geom_point(data = postcode_lookup("KY14 7AP"), aes(x=longitude, y=latitude), size=3, color="white") +
+  geom_label(data = postcode_lookup("KY14 7AP"), aes(x=(longitude+0.03), y=latitude, label=postcode))
+
+scot +
+  geom_point(data = postcode_lookup("KY14 7AP"), aes(x=longitude, y=latitude), size=5, shape=10, color="black") +
+  geom_label(data = postcode_lookup("KY14 7AP"), aes(x=(longitude+1), y=latitude, label=postcode))
 ```
 
 We can also overlay this postcode mapping with labels:
@@ -304,20 +388,12 @@ KY14_units_tidy %>%
   ggtitle("KY14 postcodes choropleth") +
   theme(legend.position = "none")
 ```
+
 Here, I think that the apparently anomalous KY14 7YB is a [large-user postcode](https://www.ons.gov.uk/methodology/geography/ukgeographies/postalgeography), located outwith the main KY14 grouping.
 
-## Copyright
+## More information
 
-The data in this archive is derived from NSUL (published by the ONS)
-and Boundary-Line (published by Ordnance Survey), which are both
-licensed under the Open Government License version 3. You must abide
-by the terms of these licenses and include the following copyright
-notices:
-
-Contains OS data © Crown copyright and database right 2020
-Contains Royal Mail data © Royal Mail copyright and database right 2020
-Source: Office for National Statistics licensed under the Open Government Licence v.3.0
-
+### Postcode region data copyright
 For the postcode regions, please refer to the [blogpost and licencing details at Mark Longair's site](https://longair.net/blog/2021/08/23/open-data-gb-postcode-unit-boundaries/). I'll reproducing his warning regarding the boundary data, which is based on 2020 data and as far as I can see will not be updated:
 
 > These boundaries are known to be approximate - they are provided in case
@@ -325,5 +401,22 @@ they are of interest and use, but are only rough representations of the
 postcode boundaries due to limitations of the open address data currently
 available. In other words, there are no guarantees about the quality of
 this data or its suitability for any use; use it at your own risk.
+
+The data in this archive is derived from NSUL (published by the ONS) and Boundary-Line (published by Ordnance Survey), which are both licensed under the Open Government License version 3. You must abide
+by the terms of these licenses and include the following copyright notices:
+
+Contains OS data © Crown copyright and database right 2020
+
+Contains Royal Mail data © Royal Mail copyright and database right 2020
+
+Source: Office for National Statistics licensed under the Open Government Licence v.3.0
+
+### 2011 datazone data copyright
+Available under the terms of the Open Government Licence. The following attribution statement must be used to acknowledge the source of the information: Copyright Scottish Government, contains Ordnance Survey data © Crown copyright and database right (insert year).
+
+### Acknowledgments
+With grateful thanks for assistance and comments from John Mackintosh, Alison Crooks, Jennifer Hislop, and Julian Augley on the [KIND Learning Network channel](https://forms.office.com/pages/responsepage.aspx?id=veDvEDCgykuAnLXmdF5Jmn79kl25VpJIq3eErXXCYKBUMUpENjBJOENINDRFMUlYQTlCM1RVNzRSRy4u). I was particularly helped by a series of blogposts by John Mackintosh -[1](https://www.johnmackintosh.net/blog/2017-09-01-easy-maps-with-tmap/), [2](https://www.johnmackintosh.net/blog/2017-08-22-simply-mapping/)
+
+I'd also suggest looking at the [tmap package](https://cran.r-project.org/web/packages/tmap/index.html) for a more pre-packaged approach to building maps in R.
 
 :::
